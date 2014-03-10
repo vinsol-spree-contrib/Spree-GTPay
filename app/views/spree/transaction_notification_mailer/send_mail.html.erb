@@ -1,0 +1,25 @@
+<table border="0" cellpadding="5" cellspacing="0">
+  <tr>
+    <th colspan="2" align="left">Your GTbank Payment Transaction was <%= @status %>. Below mentioned are the details</th>
+  </tr>
+  <tr>
+    <td>Transaction Details</td>
+  </tr>
+  <tr>
+    <td>Transaction ID</td>
+    <td>: <%= @transaction.gtpay_tranx_id %></td>
+  </tr>
+  <tr>
+    <td>Transaction Amount</td>
+    <td>: <%= Spree::Money.new(@transaction.gtpay_tranx_amount) %></td>
+  </tr>
+
+  <tr>
+    <td>Order Description</td>
+    <% if @order.line_items.count == 1 %>
+      <td>: Payment for <%= @order.line_items.first.product.name + " at #{Spree::Config[:site_name]}"%></td>
+    <% else %>
+      <td>: Payment for <%= @order.line_items.count.to_s + " products at #{Spree::Config[:site_name]}"%></td>
+    <% end %>
+  </tr>
+</table>

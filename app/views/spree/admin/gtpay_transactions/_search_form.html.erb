@@ -1,0 +1,40 @@
+<% content_for :table_filter_title do %>
+  <%= Spree.t(:search) %>
+<% end %>
+
+<% content_for :table_filter do %>
+  <div data-hook="admin_transactions_index_search">
+    <%= search_form_for [:admin, @search] do |f| %>
+
+      <div class="four columns">
+        <div class="field">
+          <%= label_tag nil, Spree.t(:gtpay_tranx_id) %>
+          <%= f.text_field :gtpay_tranx_id_eq %>
+        </div>
+        <div class="field">
+          <%= label_tag nil, Spree.t(:email) %>
+          <%= f.email_field :user_email_eq %>
+        </div>
+        <div class="field">
+          <%= f.hidden_field :status_eq, :value => params[:q][:status_eq] if params[:q] %>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+
+      <div class="actions filter-actions">
+        <div data-hook="admin_orders_index_search_buttons">
+          <%= button Spree.t(:filter_results), 'icon-search' %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+<%= link_to "All", admin_gtpay_transactions_path, :class => set_selected_class %> 
+ |
+<%= link_to "Successful", admin_gtpay_transactions_path('q[status_eq]' => "Successful"), :class => set_selected_class("Successful") %> |
+<%= link_to "Pending", admin_gtpay_transactions_path('q[status_eq]' => "Pending"), :class => set_selected_class("Pending") %> 
+ |
+<%= link_to "Unsuccessful", admin_gtpay_transactions_path('q[status_eq]' => "Unsuccessful"), :class => set_selected_class("Unsuccessful") %>
+<div class="clearfix"></div>
+<br/>

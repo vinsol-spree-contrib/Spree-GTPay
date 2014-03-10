@@ -1,0 +1,16 @@
+<html>
+<body onload="document.submit2gtpay_form.submit()" style="text-align:center; font-family:Arial, Helvetica, sans-serif; padding-top:100px;">
+  <h1 class="message">We are processing your request.<br/>Please do not press browser back button</h1>
+  <div style="text-align:center; padding:50px 0;" align="center"><img src="http://www.youth.athletics.ca/images/ajax-loader.gif"></div>
+<form name="submit2gtpay_form" action="<%= gtpay_payment_method.preferred_payment_url%>" target="_self" method="post" style="diaplay:none;">
+  <input type="hidden" name="gtpay_mert_id" value="<%= gtpay_payment_method.preferred_merchant_id %>" />
+  <input type="hidden" name="gtpay_tranx_id" value="<%= @transaction.gtpay_tranx_id %>" />
+  <input type="hidden" name="gtpay_tranx_amt" value="<%= @transaction.amount_in_cents %>" />
+  <input type="hidden" name="gtpay_tranx_curr" value="<%= @transaction.gtpay_tranx_currency %>" />
+  <input type="hidden" name="gtpay_cust_id" value="<%= @transaction.user_id %>" />
+  <input type="hidden" name="gtpay_cust_name" value="<%= @transaction.user_full_name %>" />
+  <input type="hidden" name="gtpay_tranx_noti_url" value="<%= callback_gtpay_transactions_url %>" />
+  <input type="submit" value="Pay Via GTPay" name="btnSubmit" style="display:none"/>
+</form>
+</body>
+</html>

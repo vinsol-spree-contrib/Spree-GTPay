@@ -1,0 +1,36 @@
+<div class="fieldset_style">
+  <h3>Transactions</h3>
+  <% if @transactions.present? %>
+    <table class="order-summary responsive_table" cellspacing="0" cellpadding="0" border="0">
+      <thead>
+      <tr>
+        <th>Payment Service</th>
+        <th>Transaction Status</th>
+        <th>Transaction Number</th>
+        <th><%= Spree.t(:approved_amount) %></th>
+        <th>Response(Code:Description)</th>
+        <th>Date</th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @transactions.each do |transaction| %>
+        <tr class="<%= cycle('even', 'odd') %>">
+          <td data-title="Payment"><%= "Gtbank Online Payment" %></td>
+          <td data-title="Trans. Status"><%= transaction.status.try(:capitalize) %></td>
+          <td data-title="Trans. No."><%= transaction.gtpay_tranx_id %></td>
+          <td data-title="Approved"><%= Spree::Money.new(transaction.gtpay_tranx_amount) if transaction.order.present? %></td>
+          <% if transaction.gtpay_tranx_status_code? && transaction.gtpay_tranx_status_msg? %>
+            <td data-title="Response">ApprovalCode:<%= transaction.gtpay_tranx_status_code %><br/ > Description:<%= transaction.gtpay_tranx_status_msg %></td>
+          <% else %>
+            <td data-title="Response">No Response</td>
+          <% end %>
+          <td data-title="Date"><%= transaction.created_at.strftime("%d %b %Y, %I:%M%p") %></td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+    <%= paginate @transactions %>
+  <% else %>
+    No Transactions
+  <% end %>
+</div>

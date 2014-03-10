@@ -1,0 +1,10 @@
+$("td#<%= @gtpay_transaction.id%>.status").html("<%= @gtpay_transaction.status %>");
+<% if @gtpay_transaction.successful? %>
+  $("td#<%= @gtpay_transaction.id%>.action").html('');
+  alert("Transaction is successfully Completed");
+<% elsif @gtpay_transaction.unsuccessful? %>
+  $("td#<%= @gtpay_transaction.id%>.action").html('');
+  alert("Transaction is unsuccessful, Reason: <%= @gtpay_transaction.gtpay_tranx_status_msg %>");
+<% else %>
+  alert("No response from Webpay");
+<% end %>

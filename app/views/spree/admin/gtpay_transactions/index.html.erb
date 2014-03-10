@@ -1,0 +1,36 @@
+<%= render :partial => 'spree/admin/shared/configuration_menu' %>
+<% content_for :page_title do %>
+  <h1><%= Spree.t("gtpay_transactions") %></h1>
+<% end %>
+<%= render :partial => "search_form" %>
+
+<table class="index">
+  <thead data-hook="admin_gtpay_transactions_index_headers">
+    <th><%= Spree.t("transaction_id") %></th>
+    <th><%= Spree.t("transaction_date") %></th>
+    <th><%= Spree.t("amount") %></th>
+    <th><%= Spree.t("order#") %></th>
+    <th><%= Spree.t("user") %></th>
+    <th><%= Spree.t("status") %></th>
+    <th><%= Spree.t("action") %></th>
+  </thead>
+  <tbody>
+    <% @gtpay_transactions.each do |transaction|%>
+      <tr id="<%= dom_id transaction %>" data-hook="admin_trackers_index_rows">
+        <td><%= transaction.gtpay_tranx_id %></td>
+        <td><%= transaction.created_at %></td>
+        <td><%= Spree::Money.new(transaction.gtpay_tranx_amount, { currency: "NGN" }) %></td>
+        <td><%= transaction.order.number if transaction.order.present? %></td>
+        <td><%= transaction.user.email %></td>
+        <td id= "<%= transaction.id%>" class="status"><%= transaction.status %></td>
+        <td id= "<%= transaction.id%>" class="action" >
+          <%= link_to_unless(transaction.pending?, "") do %>
+            <%= button_to(Spree.t(:query), query_interface_admin_gtpay_transaction_path(transaction), :remote => true, :confirm => "Are you sure?", :method => :get) %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate @gtpay_transactions %>
