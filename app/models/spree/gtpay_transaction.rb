@@ -25,6 +25,7 @@ module Spree
     scope :successful, where(:status => SUCCESSFUL)
 
     delegate :total, :gtpay_payment, :complete_and_finalize, :set_failure_for_payment, :to => :order, :prefix => true
+    delegate :email, to: :user, allow_nil: true
 
     def amount_in_cents
       (gtpay_tranx_amount.to_f*100).round.to_i
