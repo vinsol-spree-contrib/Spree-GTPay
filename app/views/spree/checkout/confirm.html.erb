@@ -8,7 +8,7 @@
   <input type="hidden" name="gtpay_tranx_amt" value="<%= @transaction.amount_in_cents %>" />
   <input type="hidden" name="gtpay_tranx_curr" value="<%= @transaction.gtpay_tranx_currency %>" />
   <input type="hidden" name="gtpay_cust_id" value="<%= @transaction.user_id %>" />
-  <input type="hidden" name="gtpay_cust_name" value="<%= @transaction.user_full_name %>" />
+  <input type="hidden" name="gtpay_cust_name" value="<%= @transaction.email %>" />
   <input type="hidden" name="gtpay_tranx_noti_url" value="<%= callback_gtpay_transactions_url %>" />
   <input type="submit" value="Pay Via GTPay" name="btnSubmit" style="display:none"/>
 </form>
