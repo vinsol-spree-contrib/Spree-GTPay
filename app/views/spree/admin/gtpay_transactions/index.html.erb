@@ -19,7 +19,7 @@
       <tr id="<%= dom_id transaction %>" data-hook="admin_trackers_index_rows">
         <td><%= transaction.gtpay_tranx_id %></td>
         <td><%= transaction.created_at %></td>
-        <td><%= Spree::Money.new(transaction.gtpay_tranx_amount, { currency: "NGN" }) %></td>
+        <td><%= Spree::Money.new(transaction.gtpay_tranx_amount) %></td>
         <td><%= transaction.order.number if transaction.order.present? %></td>
         <td><%= transaction.user.email %></td>
         <td id= "<%= transaction.id%>" class="status"><%= transaction.status %></td>

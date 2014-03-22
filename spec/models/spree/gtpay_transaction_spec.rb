@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe Spree::GtpayTransaction do
+  GT_DATA = {:product_id => "xxxx", :mac_id => "xxxxxxxxx", :query_url => "xxxxxx" }
   let(:shipping_category) { Spree::ShippingCategory.create!(:name => "Default Shipping") }
   before do
     Spree::Stock::Quantifier.any_instance.stub(can_supply?: true)
