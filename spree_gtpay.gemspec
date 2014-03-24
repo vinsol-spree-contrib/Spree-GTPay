@@ -2,7 +2,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_gtpay'
-  s.version     = '1.0.0'
+  s.version     = '1.0.1'
   s.summary     = 'GTPay gateway'
   s.required_ruby_version = '>= 1.9.3'
 
@@ -11,7 +11,6 @@ Gem::Specification.new do |s|
   s.homepage  = 'http://www.vinsol.com'
   s.license   = "MIT"
 
-  s.summary     = "Enable spree store to allow payment via GtPay"
   s.description = "Enable spree store to allow payment via GtPay"
 
 
