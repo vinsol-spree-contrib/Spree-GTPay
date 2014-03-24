@@ -1,7 +1,16 @@
-SpreeGtpay
+SpreeGtpay  [![Code Climate](https://codeclimate.com/github/vinsol/Spree-Gtpay.png)](https://codeclimate.com/github/vinsol/Spree-Gtpay) [![Build Status](https://travis-ci.org/vinsol/Spree-Gtpay.svg)](https://travis-ci.org/vinsol/Spree-Gtpay)
 ==========
 
-Introduction goes here.
+Enable spree store to allow payment via [GtBank Payment](http://gtbank.com/) (a preferred e-payment service provider in Nigeria, Africa)
+
+####For customer:
+
+Customer can pay via GtBank payment method at Checkout. Customer can also see the list of GtBank Transactions initiated by them.
+
+####For admin:
+
+Admin can see the list of GtBank Transactions initiated by customers under admin section. Admin can also ping GtBank gateway for an updated status of a transaction and the transaction is then updated accordingly. 
+
 
 Installation
 ------------
@@ -19,22 +28,50 @@ bundle
 bundle exec rails g spree_gtpay:install
 ```
 
+Configuration
+--------
+
+1. To setup the payment method Login as an admin and add a new Payment Method (under Configuration), using following details:
+
+  ```
+  Name: GTBank
+  Environment: Production (or what ever environment you prefer)
+  Provider: Spree::Gateway::Gtpay
+  Active: yes
+  ```
+
+2. Click update after adding your credentials in the screen that follows:
+
+  ```
+  Payment Url: Provide payment url provided by GTbank.
+  Merchant: provide merchant id provided bt GTbank
+  ```
+
+3. After this you need to create ```initializers/gtbank_constant.rb``` and add below mentioned to the same file.
+
+  ```
+  GT_DATA = {:product_id => "xxxx", :mac_id => "xxxxxxxxx", :query_url => "xxxxxx" }
+  ```
+
+These are the details which are provided by interswitch(Ask about it from GTbank if you dont have it) and replace xxx with exact values provided.
+
+
 Testing
 -------
 
-Be sure to bundle your dependencies and then create a dummy test app for the specs to run against.
+You need to do a quick one-time creation of a test application and then you can use it to run the tests.
 
-```shell
-bundle
-bundle exec rake test_app
-bundle exec rspec spec
-```
+    bundle exec rake test_app
 
-When testing your applications integration with this extension you may use it's factories.
-Simply add this require statement to your spec_helper:
+Then run the rspec tests with:
 
-```ruby
-require 'spree_gtpay/factories'
-```
+    bundle exec rspec .
 
-Copyright (c) 2014 [name of extension creator], released under the New BSD License
+
+
+Credits
+-------
+
+[![vinsol.com: Ruby on Rails, iOS and Android developers](http://vinsol.com/vin_logo.png "Ruby on Rails, iOS and Android developers")](http://vinsol.com)
+
+Copyright (c) 2014 [vinsol.com](http://vinsol.com "Ruby on Rails, iOS and Android developers"), released under the New MIT License
