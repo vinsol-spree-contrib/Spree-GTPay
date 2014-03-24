@@ -52,7 +52,7 @@ eg. initializers/gtbank_constant.rb
 
 create hash like
 
-**GT_DATA* = **{:product_id => "xxxx", :mac_id => "xxxxxxxxx", :query_url => "xxxxxx" }*
+GT_DATA = {:product_id => "xxxx", :mac_id => "xxxxxxxxx", :query_url => "xxxxxx" }
 
 These are the details which are provided by interswitch(Ask about it from GTbank if you dont have it) and replace xxx with exact values provided.
 
