@@ -59,19 +59,19 @@ These are the details which are provided by interswitch(Ask about it from GTbank
 Testing
 -------
 
-Be sure to bundle your dependencies and then create a dummy test app for the specs to run against.
+You need to do a quick one-time creation of a test application and then you can use it to run the tests.
 
-```shell
-bundle
-bundle exec rake test_app
-bundle exec rspec spec
-```
+    bundle exec rake test_app
 
-When testing your applications integration with this extension you may use it's factories.
-Simply add this require statement to your spec_helper:
+Then run the rspec tests with:
 
-```ruby
-require 'spree_gtpay/factories'
-```
+    bundle exec rspec .
 
-Copyright (c) 2014 [name of extension creator], released under the New BSD License
+
+
+Credits
+-------
+
+[![vinsol.com: Ruby on Rails, iOS and Android developers](http://vinsol.com/vin_logo.png "Ruby on Rails, iOS and Android developers")](http://vinsol.com)
+
+Copyright (c) 2014 [vinsol.com](http://vinsol.com "Ruby on Rails, iOS and Android developers"), released under the New MIT License
