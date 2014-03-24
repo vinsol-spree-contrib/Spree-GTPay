@@ -1,7 +1,6 @@
 SpreeGtpay  [![Build Status](https://travis-ci.org/vinsol/Spree-Gtpay.svg)](https://travis-ci.org/vinsol/Spree-Gtpay)
 ==========
 
-Introduction goes here.
 
 Installation
 ------------
