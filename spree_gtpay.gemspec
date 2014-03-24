@@ -8,12 +8,13 @@ Gem::Specification.new do |s|
 
   s.author    = 'Abhishek Jain'
   s.email     = 'info@vinsol.com'
-  # s.homepage  = 'http://www.spreecommerce.com'
+  s.homepage  = 'http://www.vinsol.com'
 
-  #s.files       = `git ls-files`.split("\n")
-  #s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
+  s.files = Dir['LICENSE', 'README.md', 'app/**/*', 'config/**/*', 'lib/**/*', 'db/**/*']
+  
   s.require_path = 'lib'
   s.requirements << 'none'
+  s.license   = "MIT"
 
   s.add_dependency 'spree_core', '~> 2.0.4'
 
