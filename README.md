@@ -1,5 +1,15 @@
-SpreeGtpay  [![Build Status](https://travis-ci.org/vinsol/Spree-Gtpay.svg)](https://travis-ci.org/vinsol/Spree-Gtpay)
+SpreeGtpay  [![Code Climate](https://codeclimate.com/github/vinsol/Spree-Gtpay.png)](https://codeclimate.com/github/vinsol/Spree-Gtpay) [![Build Status](https://travis-ci.org/vinsol/Spree-Gtpay.svg)](https://travis-ci.org/vinsol/Spree-Gtpay)
 ==========
+
+Enable spree store to allow payment via [GtBank Payment](http://gtbank.com/) (a preferred e-payment service provider in Nigeria, Africa)
+
+####For customer:
+
+Customer can pay via GtBank payment method at Checkout. Customer can also see the list of GtBank Transactions initiated by them.
+
+####For admin:
+
+Admin can see the list of GtBank Transactions initiated by customers under admin section. Admin can also ping GtBank gateway for an updated status of a transaction and the transaction is then updated accordingly. 
 
 
 Installation
@@ -21,37 +31,27 @@ bundle exec rails g spree_gtpay:install
 Configuration
 --------
 
-This is an extension for GTBank payment method used for Card payment using GTBank Gateway(Interswitch).
+1. To setup the payment method Login as an admin and add a new Payment Method (under Configuration), using following details:
 
-To set this up:
+  ```
+  Name: GTBank
+  Environment: Production (or what ever environment you prefer)
+  Provider: Spree::Gateway::Gtpay
+  Active: yes
+  ```
 
-Setup the Payment Method Log in as an admin and add a new Payment Method (under Configuration), using following details:
+2. Click update after adding your credentials in the screen that follows:
 
-Name: GTBank
+  ```
+  Payment Url: Provide payment url provided by GTbank.
+  Merchant: provide merchant id provided bt GTbank
+  ```
 
-Environment: Production (or what ever environment you prefer)
+3. After this you need to create ```initializers/gtbank_constant.rb``` and add below mentioned to the same file.
 
-Provider: Spree::Gateway::Gtpay
-
-Active: yes
-
-Click **Create* , and now add your credentials in the screen that follows:
-
-Payment Url: Provide payment url provided by GTbank.
-
-Merchant: provide merchant id provided bt GTbank
-
-
-Click Update
-
-
-After this You will need to create Constant in initializer folder.
-
-eg. initializers/gtbank_constant.rb
-
-create hash like
-
-GT_DATA = {:product_id => "xxxx", :mac_id => "xxxxxxxxx", :query_url => "xxxxxx" }
+  ```
+  GT_DATA = {:product_id => "xxxx", :mac_id => "xxxxxxxxx", :query_url => "xxxxxx" }
+  ```
 
 These are the details which are provided by interswitch(Ask about it from GTbank if you dont have it) and replace xxx with exact values provided.
 
