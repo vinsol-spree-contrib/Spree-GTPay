@@ -18,7 +18,7 @@ Installation
 Add spree_gtpay to your Gemfile:
 
 ```ruby
-gem 'spree_gtpay', :git => 'git://github.com/vinsol/Spree-Gtpay.git'
+gem 'spree_gtpay'
 ```
 
 Bundle your dependencies and run the installation generator:
