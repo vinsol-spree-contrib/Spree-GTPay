@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.homepage  = 'http://www.vinsol.com'
   s.license   = "MIT"
 
-  s.description = "Enable spree store to allow payment via GtPay"
+  s.description = "Enable spree store to allow payment via GTPay, a GTBank Payment Gateway for Nigeria"
 
 
 
