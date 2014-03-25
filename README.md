@@ -1,4 +1,4 @@
-Spree GTPay  [![Code Climate](https://codeclimate.com/github/vinsol/Spree-GTPay.png)](https://codeclimate.com/github/vinsol/Spree-GTPay) [![Build Status](https://travis-ci.org/vinsol/Spree-GTPay.svg)](https://travis-ci.org/vinsol/Spree-GTPay)
+Spree GTPay  [![Code Climate](https://codeclimate.com/github/vinsol/Spree-Gtpay.png)](https://codeclimate.com/github/vinsol/Spree-Gtpay) [![Build Status](https://travis-ci.org/vinsol/Spree-GTPay.svg?branch=master)](https://travis-ci.org/vinsol/Spree-GTPay)
 ==========
 
 Enable spree store to allow payment via [GTBank](http://gtbank.com/) Payment (a foremost Nigerian bank)
