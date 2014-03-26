@@ -22,8 +22,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'spree_core', '~> 2.0.0'
   s.add_dependency 'delayed_job_active_record', '~> 4.0.0'
-  s.add_development_dependency 'capybara', '~> 2.1'
-  s.add_development_dependency 'coffee-rails'
   s.add_development_dependency 'database_cleaner'
   s.add_development_dependency 'factory_girl', '~> 4.2'
   s.add_development_dependency 'ffaker'
