@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
 
   s.author    = 'Abhishek Jain'
   s.email     = 'info@vinsol.com'
-  s.homepage  = 'http://www.vinsol.com'
+  s.homepage  = 'http://vinsol.com'
   s.license   = "MIT"
 
-  s.description = "Enable spree store to allow payment via GtPay"
+  s.description = "Enable spree store to allow payment via GTPay, a GTBank Payment Gateway for Nigeria"
 
 
 

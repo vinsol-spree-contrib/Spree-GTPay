@@ -1,15 +1,15 @@
-SpreeGtpay  [![Code Climate](https://codeclimate.com/github/vinsol/Spree-Gtpay.png)](https://codeclimate.com/github/vinsol/Spree-Gtpay) [![Build Status](https://travis-ci.org/vinsol/Spree-Gtpay.svg)](https://travis-ci.org/vinsol/Spree-Gtpay)
+Spree GTPay  [![Code Climate](https://codeclimate.com/github/vinsol/Spree-Gtpay.png)](https://codeclimate.com/github/vinsol/Spree-Gtpay) [![Build Status](https://travis-ci.org/vinsol/Spree-GTPay.svg?branch=master)](https://travis-ci.org/vinsol/Spree-GTPay)
 ==========
 
-Enable spree store to allow payment via [GtBank Payment](http://gtbank.com/) (a preferred e-payment service provider in Nigeria, Africa)
+Enable spree store to allow payment via [GTBank](http://gtbank.com/) Payment (a foremost Nigerian bank)
 
 ####For customer:
 
-Customer can pay via GtBank payment method at Checkout. Customer can also see the list of GtBank Transactions initiated by them.
+Customer can pay via GTBank payment method at Checkout. Customer can also see the list of GTBank Transactions initiated by them.
 
 ####For admin:
 
-Admin can see the list of GtBank Transactions initiated by customers under admin section. Admin can also ping GtBank gateway for an updated status of a transaction and the transaction is then updated accordingly. 
+Admin can see the list of GTBank Transactions initiated by customers under admin section. Admin can also ping GTBank gateway for an updated status of a transaction and the transaction is then updated accordingly. 
 
 
 Installation
@@ -43,8 +43,8 @@ Configuration
 2. Click update after adding your credentials in the screen that follows:
 
   ```
-  Payment Url: Provide payment url provided by GTbank.
-  Merchant: provide merchant id provided bt GTbank
+  Payment Url: Provide payment url provided by GTBank.
+  Merchant: provide merchant id provided bt GTBank
   ```
 
 3. After this you need to create ```initializers/gtbank_constant.rb``` and add below mentioned to the same file.
@@ -53,7 +53,7 @@ Configuration
   GT_DATA = {:product_id => "xxxx", :mac_id => "xxxxxxxxx", :query_url => "xxxxxx" }
   ```
 
-These are the details which are provided by interswitch(Ask about it from GTbank if you dont have it) and replace xxx with exact values provided.
+These are the details which are provided by interswitch(Ask about it from GTBank if you dont have it) and replace xxx with exact values provided.
 
 
 Testing
