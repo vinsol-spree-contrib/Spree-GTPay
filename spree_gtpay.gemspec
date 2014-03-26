@@ -2,7 +2,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_gtpay'
-  s.version     = '1.0.1'
+  s.version     = '1.0.3'
   s.summary     = 'GTPay gateway'
   s.required_ruby_version = '>= 1.9.3'
 
