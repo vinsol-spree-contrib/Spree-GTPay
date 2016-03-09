@@ -1,5 +1,5 @@
 Spree::CheckoutController.class_eval do
-  before_filter :redirect_to_gtpay, :only => [:update]
+  before_filter :redirect_to_gtpay, only: :update
   helper_method :gtpay_payment_method
 
   def confirm
@@ -13,16 +13,15 @@ Spree::CheckoutController.class_eval do
   end
 
   private
-
   def redirect_to_gtpay
     if payment_page?
-      payment_method = Spree::PaymentMethod.where(:id => (select_gtpay_payment(params[:order][:payments_attributes])[:payment_method_id])).first
+      payment_method =  Spree::PaymentMethod.where(:id => params[:order][:payments_attributes].first['payment_method_id']).first
       if payment_method.kind_of?(Spree::Gateway::Gtpay)
-        if @order.update_attributes(object_params)
-          redirect_to(gtpay_confirm_path) and return
+        if @order.update_from_params(params, permitted_checkout_attributes, request.headers.env)
+          redirect_to(gtpay_confirm_path)
         else
           flash[:error] = "Something went wrong. Please try again"
-          redirect_to checkout_state_path("address") and return
+          redirect_to checkout_state_path(@order.state)
         end
       end
     end

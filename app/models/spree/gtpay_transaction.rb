@@ -8,8 +8,6 @@ module Spree
     SUCCESSFUL  = 'Successful'
     UNSUCCESSFUL = 'Unsuccessful'
 
-    attr_accessible :gtpay_tranx_status_code, :gtpay_tranx_memo, :gtpay_tranx_status_msg, :gtpay_tranx_amount
-
     before_validation :generate_tranx_id, :set_default_attirbutes, :on => :create
     before_update :set_status, :if => :gtpay_tranx_status_code_changed?
     before_update :order_complete_and_finalize, :send_transaction_mail, :if => [:status_changed?, :successful?]
@@ -21,8 +19,8 @@ module Spree
     belongs_to :user
     belongs_to :order
 
-    scope :pending, where(:status => PENDING)
-    scope :successful, where(:status => SUCCESSFUL)
+    scope :pending, -> { where(:status => PENDING) }
+    scope :successful, -> { where(:status => SUCCESSFUL) }
 
     delegate :total, :gtpay_payment, :complete_and_finalize, :set_failure_for_payment, :to => :order, :prefix => true
     delegate :email, to: :user, allow_nil: true
@@ -64,7 +62,7 @@ module Spree
 
     def update_transaction_on_query
       response = query_interswitch
-      update_attributes(:gtpay_tranx_status_code => response["ResponseCode"], :gtpay_tranx_status_msg => response["ResponseDescription"], :gtpay_tranx_amount => (response["Amount"].to_f/100))
+      update(:gtpay_tranx_status_code => response["ResponseCode"], :gtpay_tranx_status_msg => response["ResponseDescription"], :gtpay_tranx_amount => (response["Amount"].to_f/100))
     end
 
     private

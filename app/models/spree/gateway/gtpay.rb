@@ -4,8 +4,6 @@ module Spree
     preference :payment_url, :string
     preference :merchant_id, :string
 
-    attr_accessible :preferred_payment_url, :preferred_merchant_id
-
     def actions
       %w{capture void}
     end

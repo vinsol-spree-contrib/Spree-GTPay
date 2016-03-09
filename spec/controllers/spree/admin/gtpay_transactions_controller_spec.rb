@@ -2,22 +2,21 @@ require 'spec_helper'
 
 
 describe Spree::Admin::GtpayTransactionsController do
-  let(:user) { mock_model(Spree::User) }
-  let(:role) { mock_model(Spree::Role) }
+  let(:user) { double(Spree::User, id: 1) }
+  let(:role) { double(Spree::Role) }
   let(:roles) { [role] }
 
   before do
-    controller.stub(:spree_current_user).and_return(user)
-    controller.stub(:authorize_admin).and_return(true)
-    controller.stub(:authorize!).and_return(true)
-    user.stub(:generate_spree_api_key!).and_return(true)
-    user.stub(:roles).and_return(roles)
-    roles.stub(:includes).and_return(roles)
-    role.stub(:ability).and_return(true)
-    @transaction = mock_model(Spree::GtpayTransaction)
+    allow(controller).to receive(:spree_current_user).and_return(user)
+    allow(controller).to receive(:authorize_admin).and_return(true)
+    allow(controller).to receive(:authorize!).and_return(true)
+    allow(user).to receive(:spree_api_key).and_return(true)
+    allow(user).to receive(:roles).and_return(roles)
+    allow(roles).to receive(:includes).and_return(roles)
+    allow(role).to receive(:ability).and_return(true)
+    @transaction = double(Spree::GtpayTransaction, id: 1)
     @transactions = [@transaction]
   end
-
 
   describe 'index' do
     def send_request(options = {})
@@ -25,35 +24,35 @@ describe Spree::Admin::GtpayTransactionsController do
     end
 
     before do
-      Spree::GtpayTransaction.stub(:ransack).and_return(@transactions)
-      @transactions.stub(:order).and_return(@transactions)
-      @transactions.stub(:result).and_return(@transactions)
-      @transactions.stub(:page).and_return(@transactions)
-      @transactions.stub(:per).and_return(@transactions)
+      allow(Spree::GtpayTransaction).to receive(:ransack).and_return(@transactions)
+      allow(@transactions).to receive(:order).and_return(@transactions)
+      allow(@transactions).to receive(:result).and_return(@transactions)
+      allow(@transactions).to receive(:page).and_return(@transactions)
+      allow(@transactions).to receive(:per).and_return(@transactions)
     end
 
     it "should receive ransack" do
-      Spree::GtpayTransaction.should_receive(:ransack).with({'gtpay_tranx_id' => "12345678"}).and_return(@transactions)
+      expect(Spree::GtpayTransaction).to receive(:ransack).with({'gtpay_tranx_id' => "12345678"}).and_return(@transactions)
       send_request({:q => {:gtpay_tranx_id => "12345678"}})
     end
 
     it "should_receive result on transactions" do
-      @transactions.should_receive(:result).and_return(@transactions)
+      expect(@transactions).to receive(:result).and_return(@transactions)
       send_request({:q => {:gtpay_tranx_id => "12345678"}})
     end
 
     it "should_receive order on transactions" do
-      @transactions.should_receive(:order).with('created_at desc').and_return(@transactions)
+      expect(@transactions).to receive(:order).with('created_at desc').and_return(@transactions)
       send_request({:q => {:gtpay_tranx_id => "12345678"}})
     end
 
     it "should_receive page on transactions" do
-      @transactions.should_receive(:page).and_return(@transactions)
+      expect(@transactions).to receive(:page).and_return(@transactions)
       send_request({:q => {:gtpay_tranx_id => "12345678"}})
     end
 
     it "should_receive per on transactions" do
-      @transactions.should_receive(:per).with(20).and_return(@transactions)
+      expect(@transactions).to receive(:per).with(20).and_return(@transactions)
       send_request({:q => {:gtpay_tranx_id => "12345678"}})
     end
   end
@@ -65,18 +64,18 @@ describe Spree::Admin::GtpayTransactionsController do
     end
 
     before do
-      Spree::GtpayTransaction.stub(:find).and_return(@transaction)
-      @transaction.stub(:update_transaction_on_query).and_return(true)
+      allow(Spree::GtpayTransaction).to receive(:find).and_return(@transaction)
+      allow(@transaction).to receive(:update_transaction_on_query).and_return(true)
     end
 
     it "should_receive update_transaction_on_query on transaction" do
-      @transaction.should_receive(:update_transaction_on_query).and_return(true)
+      expect(@transaction).to receive(:update_transaction_on_query).and_return(true)
       send_request
     end
 
     it "should render query interface" do
       send_request
-      response.should render_template(:query_interface)
+      expect(response).to render_template(:query_interface)
     end
   end
 end

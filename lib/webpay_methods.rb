@@ -1,11 +1,13 @@
+require 'httparty'
+
 module WebpayMethods
   private
 
   def query_interswitch
     headers = {:headers => { "Hash" => transaction_hash} }
     begin
-      HTTParty.get("#{GT_DATA[:query_url]}#{transaction_params}", headers).parsed_response
-    rescue
+      ::HTTParty.get("#{GT_DATA[:query_url]}#{transaction_params}", headers).parsed_response
+    rescue => e
       {}
     end
   end
