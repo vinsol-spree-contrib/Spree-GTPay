@@ -1,8 +1,11 @@
-<div class="fieldset_style">
-  <h3>Transactions</h3>
+<h1><%= accurate_title %></h1>
+
+<div class="account-my-orders">
+
+  <h3><%= Spree.t(:my_gtpay_transactions) %></h3>
   <% if @transactions.present? %>
-    <table class="order-summary responsive_table" cellspacing="0" cellpadding="0" border="0">
-      <thead>
+    <table class="table table-striped">
+      <thead class="active">
       <tr>
         <th>Payment Service</th>
         <th>Transaction Status</th>
@@ -14,8 +17,8 @@
       </thead>
       <tbody>
       <% @transactions.each do |transaction| %>
-        <tr class="<%= cycle('even', 'odd') %>">
-          <td data-title="Payment"><%= "Gtbank Online Payment" %></td>
+        <tr>
+          <td data-title="Payment">Gtbank Online Payment</td>
           <td data-title="Trans. Status"><%= transaction.status.try(:capitalize) %></td>
           <td data-title="Trans. No."><%= transaction.gtpay_tranx_id %></td>
           <td data-title="Approved"><%= Spree::Money.new(transaction.gtpay_tranx_amount) if transaction.order.present? %></td>
@@ -29,8 +32,9 @@
       <% end %>
       </tbody>
     </table>
-    <%= paginate @transactions %>
   <% else %>
-    No Transactions
+    <div class="alert alert-info"><%= Spree.t(:you_have_no_gtpay_transactions_yet) %></div>
   <% end %>
+  <br />
+
 </div>

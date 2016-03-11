@@ -226,22 +226,32 @@ describe Spree::GtpayTransaction do
   describe 'send_transaction_mail' do
     context 'when status changed to successful' do
       before do
+        ::Delayed = 'test'
         allow(@transaction).to receive(:order_complete_and_finalize).and_return(true)
         @transaction.status = "Successful"
-        @job = double(Delayed::Job)
-        allow(Spree::TransactionNotificationMailer).to receive(:delay).and_return(@job)
-        allow(@job).to receive(:send_mail).and_return(true)
+        allow(Spree::TransactionNotificationMailer).to receive(:send_mail).and_return(@job)
+        allow(@job).to receive(:deliver_later).and_return(true)
       end
 
-      it "should receive delay on TransactionNotificationMailer" do
-        expect(Spree::TransactionNotificationMailer).to receive(:delay).and_return(@job)
-        @transaction.save
+      context 'when delayed jobs are being used' do
+        it "should receive delay on TransactionNotificationMailer" do
+          expect(Spree::TransactionNotificationMailer).to receive(:send_mail).with(@transaction).and_return(@job)
+          @transaction.save
+        end
+
+        it "should_receive send_mail on delayed job" do
+          expect(@job).to receive(:deliver_later).and_return(true)
+          @transaction.save
+        end
       end
 
-      it "should_receive send_mail on delayed job" do
-        expect(@job).to receive(:send_mail).with(@transaction).and_return(true)
-        @transaction.save
+      context 'when delayed jobs are not being used' do
+        it "should receive delay on TransactionNotificationMailer" do
+          expect(Spree::TransactionNotificationMailer).to receive(:send_mail).with(@transaction).and_return(@job)
+          @transaction.save
+        end
       end
+
     end
 
     context 'when status changed to pending' do

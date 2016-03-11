@@ -9,7 +9,7 @@ Spree::Order.class_eval do
 
   def complete_and_finalize
     gtpay_payment.process_and_complete!
-    update(:state => "complete", :completed_at => Time.current)
+    update(state: "complete", completed_at: Time.current)
     finalize!
   end
 

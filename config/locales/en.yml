@@ -5,3 +5,10 @@ en:
   hello: "Hello world"
   spree:
     query: "Query"
+    internal_error: "Something went wrong. Please try again"
+    minimum_amount: "Minimum amount for order must be above %{minimum_amount}"
+    unsuccessful_transaction: "Your Transaction was not successful. <br/> Reason: %{status_msg}. <br/> Transaction reference: %{transaction_id}. <br/> Please Try again"
+    unprocessable_order: "Your Order cannot be processed. Please contact customer support <br/> Reason: %{status_msg} <br/> Transaction Reference: %{transaction_id}"
+    order_processed: "Your Order has been processed successfully. <br/> Transaction Reference: %{transaction_id} <br/> Transaction Code: %{status_code} <br/> Transaction Message: %{status_msg}"
+    my_gtpay_transactions: 'My GtPay Transactions'
+    you_have_no_gtpay_transactions_yet: 'You have no GtPay transactions yet.'

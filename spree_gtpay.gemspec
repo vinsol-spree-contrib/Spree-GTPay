@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.requirements << 'none'
 
   s.add_dependency 'spree_core', '~> 3.0.0'
+  s.add_dependency 'sqlite3', '~> 1.3.11'
   s.add_dependency 'httparty', '~> 0.13.7'
 
 end
