@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.name        = 'spree_gtpay'
   s.version     = '1.0.4'
   s.summary     = 'GTPay gateway'
-  s.required_ruby_version = '>= 1.9.3'
+  s.required_ruby_version = '>= 2.1.5'
 
   s.author    = 'Abhishek Jain'
   s.email     = 'info@vinsol.com'
