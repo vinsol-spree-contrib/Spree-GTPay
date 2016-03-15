@@ -39,10 +39,6 @@ Spree::CheckoutController.class_eval do
     end
   end
 
-  def select_gtpay_payment(payment_attributes)
-    payment_attributes.select { |payment| payment["payment_method_id"] == gtpay_payment_method.id.to_s }.first
-  end
-
   def gtpay_payment_method
     Spree::Gateway::Gtpay.first
   end

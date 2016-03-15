@@ -34,7 +34,6 @@ describe Spree::CheckoutController do
     allow(Spree::PaymentMethod).to receive(:where).and_return([gtpay_payment_method])
     allow(gtpay_payment_method).to receive(:kind_of?).and_return true
     allow(Spree::Gateway::Gtpay).to receive(:first).and_return(gtpay_payment_method)
-    allow(controller).to receive(:select_gtpay_payment).and_return({:payment_method_id => gtpay_payment_method.id.to_s})
     allow(controller).to receive(:gtpay_payment_method).and_return(gtpay_payment_method)
     allow(user).to receive(:orders).and_return(Spree::Order.none)
     allow(order).to receive(:temporary_address=)

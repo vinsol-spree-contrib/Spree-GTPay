@@ -91,11 +91,7 @@ module Spree
     end
 
     def send_transaction_mail
-      if defined? ::Delayed
-        Spree::TransactionNotificationMailer.send_mail(self).deliver_later
-      else
-        Spree::TransactionNotificationMailer.send_mail(self)
-      end
+      Spree::TransactionNotificationMailer.send_mail(self).deliver_later
     end
   end
 
