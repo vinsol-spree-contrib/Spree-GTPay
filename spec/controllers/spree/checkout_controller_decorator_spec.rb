@@ -2,10 +2,10 @@ require 'spec_helper'
 
 
 describe Spree::CheckoutController do
-  let(:order) { double(Spree::Order, :remaining_total => 1000, :state => 'payment', id: 1) }
+  let(:order) { double(Spree::Order, remaining_total: 1000, state: 'payment', id: 1) }
   let(:user) { double(Spree::User) }
   let(:gtpay_payment_method) { double(Spree::Gateway::Gtpay, id: 1) }
-  let(:gtpay_transaction) { double(Spree::GtpayTransaction, :transaction_id => 11) }
+  let(:gtpay_transaction) { double(Spree::GtpayTransaction, transaction_id: 11) }
   let(:gtpay_payment) {double(Spree::Payment)}
 
   before(:each) do
@@ -41,7 +41,7 @@ describe Spree::CheckoutController do
 
   describe '#update' do
     def send_request(params = {})
-      put :update, params.merge!(:use_route => 'spree', :id => order.id)
+      put :update, params.merge!(use_route: 'spree', id: order.id)
     end
 
 
@@ -49,9 +49,12 @@ describe Spree::CheckoutController do
 
       context 'when state payment and payment payments_attributes present' do
 
+        before do
+          expect(Spree::PaymentMethod).to receive(:find_by).and_return(gtpay_payment_method)
+        end
+
         it "should receive where on Spree::PaymentMethod with select_gtpay_payment returning gtpay_payment_method" do
-          expect(Spree::PaymentMethod).to receive(:where).with(:id => gtpay_payment_method.id.to_s).and_return([gtpay_payment_method])
-          send_request(:order => { :payments_attributes => [{:payment_method_id => gtpay_payment_method.id}]}, :state => "payment")
+          send_request(order: { payments_attributes: [{ payment_method_id: gtpay_payment_method.id}] }, state: "payment")
         end
 
         context 'when payment_method kind_of Spree::Gateway::Gtpay' do
@@ -60,7 +63,7 @@ describe Spree::CheckoutController do
             it "should redirect to confirm_path" do
               expect(order).to receive(:update_from_params).and_return(true)
               expect(controller).to receive(:permitted_checkout_attributes)
-              send_request(:order => { :payments_attributes => [{:payment_method_id => gtpay_payment_method.id}]}, :state => "payment")
+              send_request(order: { payments_attributes: [{ payment_method_id: gtpay_payment_method.id}] }, state: "payment")
               expect(response).to redirect_to("/gtpay_confirm")
             end
           end
@@ -71,12 +74,12 @@ describe Spree::CheckoutController do
             end
 
             it "should redirect_to address page" do
-              send_request(:order => { :payments_attributes => [{:payment_method_id => gtpay_payment_method.id}]}, :state => "payment")
+              send_request(order: { payments_attributes: [{payment_method_id: gtpay_payment_method.id}]}, state: "payment")
               expect(response).to redirect_to(spree.checkout_state_path(order.state))
             end
 
             it "should set flash message" do
-              send_request(:order => { :payments_attributes => [{:payment_method_id => gtpay_payment_method.id}]}, :state => "payment")
+              send_request(order: { payments_attributes: [{payment_method_id: gtpay_payment_method.id}]}, state: "payment")
               expect(flash[:error]).to eq("Something went wrong. Please try again")
             end
           end
@@ -89,7 +92,7 @@ describe Spree::CheckoutController do
           end
 
           it "should_receive update_attributes" do
-            send_request(:order => { :payments_attributes => [{:payment_method_id => 3}]}, :state => "payment")
+            send_request(order: { payments_attributes: [{payment_method_id: 3}]}, state: "payment")
             expect(response).not_to redirect_to("/gtpay_confirm")
           end
         end
@@ -98,14 +101,14 @@ describe Spree::CheckoutController do
       context 'when state payment not payment' do
         it "should not receive where on Spree::PaymentMethod" do
           expect(Spree::PaymentMethod).not_to receive(:where)
-          send_request(:order => { :payments_attributes => [{:payment_method_id => gtpay_payment_method.id}]}, :state => "deliver")
+          send_request(order: { payments_attributes: [{payment_method_id: gtpay_payment_method.id}]}, state: "deliver")
         end
       end
 
       context 'when payments_attributes not present' do
         it "should not receive where on Spree::PaymentMethod" do
           expect(Spree::PaymentMethod).not_to receive(:where)
-          send_request(:order => { :state => "payment" })
+          send_request(order: { state: "payment" })
         end
       end
     end
@@ -122,7 +125,7 @@ describe Spree::CheckoutController do
     end
 
     def send_request
-      get :confirm, :use_route => "spree"
+      get :confirm, use_route: "spree"
     end
 
     it "should gtpay_transactions on order" do
@@ -161,13 +164,13 @@ describe Spree::CheckoutController do
 
       it "should redirect to payment step" do
         send_request
-        expect(response).to redirect_to(spree.checkout_state_path(:state => "payment"))
+        expect(response).to redirect_to(spree.checkout_state_path(state: "payment"))
       end
 
       context 'flash error' do
         context 'when error in amount' do
           before do
-            allow(gtpay_transaction).to receive("errors").and_return({:gtpay_tranx_amount => "must be greater than 25"})
+            allow(gtpay_transaction).to receive("errors").and_return({gtpay_tranx_amount: "must be greater than 25"})
           end
 
           it "should set flash error for minimum amount" do

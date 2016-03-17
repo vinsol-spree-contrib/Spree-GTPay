@@ -15,7 +15,7 @@ Spree::CheckoutController.class_eval do
   private
   def redirect_to_gtpay
     if payment_page?
-      payment_method =  Spree::PaymentMethod.where(id: params[:order][:payments_attributes].first['payment_method_id']).first
+      payment_method = Spree::PaymentMethod.find_by(id: params[:order][:payments_attributes].first['payment_method_id'])
       if payment_method.kind_of?(Spree::Gateway::Gtpay)
         if @order.update_from_params(params, permitted_checkout_attributes, request.headers.env)
           redirect_to(gtpay_confirm_path)

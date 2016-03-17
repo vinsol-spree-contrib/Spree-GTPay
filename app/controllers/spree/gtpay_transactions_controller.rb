@@ -2,7 +2,7 @@ module Spree
   class GtpayTransactionsController < StoreController
     before_action :load_gtpay_transaction, only: :callback
     skip_before_action :verify_authenticity_token, only: :callback
-    before_action :authenticate_spree_user!, :only => :index
+    before_action :authenticate_spree_user!, only: :index
 
     def callback
       if  @transaction.update_transaction(transaction_params) && @transaction.successful?
