@@ -8,23 +8,21 @@ module Spree
     SUCCESSFUL  = 'Successful'
     UNSUCCESSFUL = 'Unsuccessful'
 
-    attr_accessible :gtpay_tranx_status_code, :gtpay_tranx_memo, :gtpay_tranx_status_msg, :gtpay_tranx_amount
+    before_validation :generate_tranx_id, :set_default_attirbutes, on: :create
+    before_update :set_status, if: :gtpay_tranx_status_code_changed?
+    before_update :order_complete_and_finalize, :send_transaction_mail, if: [:status_changed?, :successful?]
+    before_update :order_set_failure_for_payment, if: [:status_changed?, :unsuccessful?]
 
-    before_validation :generate_tranx_id, :set_default_attirbutes, :on => :create
-    before_update :set_status, :if => :gtpay_tranx_status_code_changed?
-    before_update :order_complete_and_finalize, :send_transaction_mail, :if => [:status_changed?, :successful?]
-    before_update :order_set_failure_for_payment, :if => [:status_changed?, :unsuccessful?]
-
-    validates :gtpay_tranx_id, :user, :gtpay_tranx_amount, :gtpay_tranx_currency, :presence => true
-    validates :gtpay_tranx_amount, :numericality => true
+    validates :gtpay_tranx_id, :user, :gtpay_tranx_amount, :gtpay_tranx_currency, presence: true
+    validates :gtpay_tranx_amount, numericality: true
 
     belongs_to :user
     belongs_to :order
 
-    scope :pending, where(:status => PENDING)
-    scope :successful, where(:status => SUCCESSFUL)
+    scope :pending, -> { where(status: PENDING) }
+    scope :successful, -> { where(status: SUCCESSFUL) }
 
-    delegate :total, :gtpay_payment, :complete_and_finalize, :set_failure_for_payment, :to => :order, :prefix => true
+    delegate :total, :gtpay_payment, :complete_and_finalize, :set_failure_for_payment, to: :order, prefix: true
     delegate :email, to: :user, allow_nil: true
 
     def amount_in_cents
@@ -58,13 +56,16 @@ module Spree
       if successful_status_code?
         update_transaction_on_query
       else
-        self.save
+        self.save(validate: false)
       end
     end
 
     def update_transaction_on_query
       response = query_interswitch
-      update_attributes(:gtpay_tranx_status_code => response["ResponseCode"], :gtpay_tranx_status_msg => response["ResponseDescription"], :gtpay_tranx_amount => (response["Amount"].to_f/100))
+      self.gtpay_tranx_status_code = response["ResponseCode"]
+      self.gtpay_tranx_status_msg = response["ResponseDescription"]
+      self.gtpay_tranx_amount = response["Amount"].to_f / 100
+      save(validate: false)
     end
 
     private
@@ -80,7 +81,7 @@ module Spree
     def generate_tranx_id
       begin
         self.gtpay_tranx_id = "#{ENVIRONMENT_INITIALS}" + SecureRandom.hex(8)
-      end while GtpayTransaction.exists?(:gtpay_tranx_id => gtpay_tranx_id)
+      end while GtpayTransaction.exists?(gtpay_tranx_id: gtpay_tranx_id)
     end
 
     def set_default_attirbutes
@@ -90,8 +91,8 @@ module Spree
     end
 
     def send_transaction_mail
-      Spree::TransactionNotificationMailer.delay.send_mail(self)
+      Spree::TransactionNotificationMailer.send_mail(self).deliver_later
     end
-
   end
+
 end

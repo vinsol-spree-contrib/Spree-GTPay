@@ -30,10 +30,10 @@
     <% end %>
   </div>
 <% end %>
-<%= link_to "All", admin_gtpay_transactions_path, :class => set_selected_class %> 
+<%= link_to "All", admin_gtpay_transactions_path, :class => set_selected_class %>
  |
 <%= link_to "Successful", admin_gtpay_transactions_path('q[status_eq]' => "Successful"), :class => set_selected_class("Successful") %> |
-<%= link_to "Pending", admin_gtpay_transactions_path('q[status_eq]' => "Pending"), :class => set_selected_class("Pending") %> 
+<%= link_to "Pending", admin_gtpay_transactions_path('q[status_eq]' => "Pending"), :class => set_selected_class("Pending") %>
  |
 <%= link_to "Unsuccessful", admin_gtpay_transactions_path('q[status_eq]' => "Unsuccessful"), :class => set_selected_class("Unsuccessful") %>
 <div class="clearfix"></div>

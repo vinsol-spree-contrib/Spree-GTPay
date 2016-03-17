@@ -4,7 +4,7 @@ describe Spree::GtpayTransaction do
   GT_DATA = {:product_id => "xxxx", :mac_id => "xxxxxxxxx", :query_url => "xxxxxx" }
   let(:shipping_category) { Spree::ShippingCategory.create!(:name => "Default Shipping") }
   before do
-    Spree::Stock::Quantifier.any_instance.stub(can_supply?: true)
+    allow_any_instance_of(Spree::Stock::Quantifier).to receive_messages(can_supply?: true)
     @user = Spree::User.create!(:email => 'test_user@xyz.com', :password => 'test_password')
     @order = Spree::Order.create!
     @product = Spree::Product.create!(:name => 'test_product', :price => 30, :shipping_category_id => shipping_category.id)
@@ -18,19 +18,19 @@ describe Spree::GtpayTransaction do
   describe 'constants' do
 
     it "should return hash of currency code" do
-      Spree::GtpayTransaction::CURRENCY_CODE.should eq({ "NGN" => "566", "USD" => "844" })
+      expect(Spree::GtpayTransaction::CURRENCY_CODE).to eq({ "NGN" => "566", "USD" => "844" })
     end
 
     it "should PENDING value" do
-      Spree::GtpayTransaction::PENDING.should eq("Pending")
+      expect(Spree::GtpayTransaction::PENDING).to eq("Pending")
     end
 
     it "should MINIMUM_AMOUNT value" do
-      Spree::GtpayTransaction::SUCCESSFUL.should eq("Successful")
+      expect(Spree::GtpayTransaction::SUCCESSFUL).to eq("Successful")
     end
 
     it "should MINIMUM_AMOUNT value" do
-      Spree::GtpayTransaction::UNSUCCESSFUL.should eq("Unsuccessful")
+      expect(Spree::GtpayTransaction::UNSUCCESSFUL).to eq("Unsuccessful")
     end
   end
 
@@ -39,74 +39,66 @@ describe Spree::GtpayTransaction do
       @transaction1 = @order.gtpay_transactions.create! { |t| t.user = @user }
       @transaction1.status = "successful"
       @transaction1.save
-      @transaction.stub(:order_complete_and_finalize).and_return(true)
-      @transaction.stub(:send_transaction_mail).and_return(true)
+      allow(@transaction).to receive(:order_complete_and_finalize).and_return(true)
+      allow(@transaction).to receive(:send_transaction_mail).and_return(true)
     end
-  
+
     it "should contain pending transactions" do
-      Spree::GtpayTransaction.pending.should =~ [@transaction]
+      expect(Spree::GtpayTransaction.pending).to match_array([@transaction])
     end
   end
 
   describe 'scope successful' do
     before do
       @transaction1 = @order.gtpay_transactions.create! { |t| t.user = @user }
-      @transaction1.stub(:order_complete_and_finalize).and_return(true)
-      @transaction1.stub(:send_transaction_mail).and_return(true)
+      allow(@transaction1).to receive(:order_complete_and_finalize).and_return(true)
+      allow(@transaction1).to receive(:send_transaction_mail).and_return(true)
       @transaction1.status = "Successful"
       @transaction1.save!
     end
-  
+
     it "should contain successful transactions" do
-      Spree::GtpayTransaction.successful.should =~ [@transaction1]
+      expect(Spree::GtpayTransaction.successful).to match_array([@transaction1])
     end
   end
 
   describe 'validations' do
-    it { @transaction.should validate_presence_of(:user) }
-    it { @transaction.should validate_presence_of(:gtpay_tranx_id) }
-    it { @transaction.should validate_presence_of(:gtpay_tranx_amount) }
-    it { @transaction.should validate_presence_of(:gtpay_tranx_currency) }
-  
+    it { expect(@transaction).to validate_presence_of(:user) }
+    it { expect(@transaction).to validate_presence_of(:gtpay_tranx_id) }
+    it { expect(@transaction).to validate_presence_of(:gtpay_tranx_amount) }
+    it { expect(@transaction).to validate_presence_of(:gtpay_tranx_currency) }
+
     context 'numericality' do
       before do
         @transaction.gtpay_tranx_amount = "ew"
       end
 
       it "should not save" do
-        @transaction.save.should be_false
+        expect(@transaction.save).to be_falsey
       end
 
     end
   end
 
-
-  describe 'mass assignment' do
-    it {should allow_mass_assignment_of(:gtpay_tranx_status_code)}
-    it {should allow_mass_assignment_of(:gtpay_tranx_memo)}
-    it {should allow_mass_assignment_of(:gtpay_tranx_status_msg)}
-    it {should allow_mass_assignment_of(:gtpay_tranx_amount)}
-  end
-
   describe 'associations' do
-    it {should belong_to(:user)}
-    it {should belong_to(:order)}
+    it {is_expected.to belong_to(:user)}
+    it {is_expected.to belong_to(:order)}
   end
 
   describe 'amount_valid?' do
     context 'when order total is = than gtpay_tranx_amount' do
       it "return true" do
-        @transaction.amount_valid?.should be_true
+        expect(@transaction.amount_valid?).to be_truthy
       end
     end
 
     context 'when order total is more than gtpay_tranx_amount' do
       before do
-        @transaction.stub(:order_total).and_return(10000)
+        allow(@transaction).to receive(:order_total).and_return(10000)
       end
 
       it "return false" do
-        @transaction.amount_valid?.should be_false
+        expect(@transaction.amount_valid?).to be_falsey
       end
     end
   end
@@ -118,8 +110,8 @@ describe Spree::GtpayTransaction do
       end
 
       it "should generate_tranx_id" do
-        @transaction1.gtpay_tranx_id.should be_present
-        @transaction1.gtpay_tranx_id.size.should be(18)
+        expect(@transaction1.gtpay_tranx_id).to be_present
+        expect(@transaction1.gtpay_tranx_id.size).to be(18)
       end
     end
 
@@ -130,7 +122,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "transaction tranx_id should remain same" do
-        @transaction.gtpay_tranx_id.should eq(@tranx_id)
+        expect(@transaction.gtpay_tranx_id).to eq(@tranx_id)
       end
     end
   end
@@ -140,40 +132,45 @@ describe Spree::GtpayTransaction do
 
       context 'when successful_status_code and amount valid' do
         before do
-          @transaction.stub(:order_complete_and_finalize).and_return(true)
-          @transaction.stub(:send_transaction_mail).and_return(true)
+          allow(@transaction).to receive(:order_complete_and_finalize).and_return(true)
+          allow(@transaction).to receive(:send_transaction_mail).and_return(true)
           @transaction.gtpay_tranx_status_code = "00"
           @transaction.save
         end
 
         it "should set status to successful" do
-          @transaction.status.should eq("Successful")
+          expect(@transaction.status).to eq("Successful")
         end
       end
 
 
       context 'when successful_status_code is false' do
         before do
-          @transaction.stub(:order_set_failure_for_payment).and_return(true)
+          allow(@transaction).to receive(:order_set_failure_for_payment).and_return(true)
           @transaction.gtpay_tranx_status_code = "Z0"
           @transaction.save
         end
 
         it "should set status to unsuccessful" do
-          @transaction.status.should eq("Unsuccessful")
+          expect(@transaction.status).to eq("Unsuccessful")
         end
       end
 
       context 'when amount_valid is false' do
         before do
-          @transaction.stub(:order_set_failure_for_payment).and_return(true)
+          gtpay_gateway = Spree::Gateway::Gtpay.new
+          gtpay_gateway.name = 'test'
+          gtpay_gateway.save!
+          FactoryGirl.create(:payment, payment_method_id: gtpay_gateway.id, order_id: @order.id)
+          allow(@transaction).to receive(:order_set_failure_for_payment).and_return(true)
+          allow(@transaction).to receive(:order_total).and_return(10000)
           @transaction.gtpay_tranx_amount = 25.0
           @transaction.gtpay_tranx_status_code = "00"
           @transaction.save
         end
 
         it "should set status to unsuccessful" do
-          @transaction.status.should eq("Unsuccessful")
+          expect(@transaction.status).to eq("Unsuccessful")
         end
       end
     end
@@ -184,7 +181,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should not receive set_status" do
-        @transaction.should_not_receive(:set_status)
+        expect(@transaction).not_to receive(:set_status)
         @transaction.save
       end
     end
@@ -194,11 +191,11 @@ describe Spree::GtpayTransaction do
     context 'when status changed to successful' do
       before do
         @transaction.status = "Successful"
-        @transaction.stub(:send_transaction_mail).and_return(true)
+        allow(@transaction).to receive(:send_transaction_mail).and_return(true)
       end
 
       it "should receive order_complete_and_finalize" do
-        @transaction.should_receive(:order_complete_and_finalize).and_return(true)
+        expect(@transaction).to receive(:order_complete_and_finalize).and_return(true)
         @transaction.save
       end
     end
@@ -209,7 +206,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should not receive order_complete_and_finalize" do
-        @transaction.should_not_receive(:order_complete_and_finalize)
+        expect(@transaction).not_to receive(:order_complete_and_finalize)
         @transaction.save
       end
     end
@@ -220,7 +217,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should not receive order_complete_and_finalize" do
-        @transaction.should_not_receive(:order_complete_and_finalize)
+        expect(@transaction).not_to receive(:order_complete_and_finalize)
         @transaction.save
       end
     end
@@ -229,22 +226,32 @@ describe Spree::GtpayTransaction do
   describe 'send_transaction_mail' do
     context 'when status changed to successful' do
       before do
-        @transaction.stub(:order_complete_and_finalize).and_return(true)
+        ::Delayed = 'test'
+        allow(@transaction).to receive(:order_complete_and_finalize).and_return(true)
         @transaction.status = "Successful"
-        @job = double(Delayed::Job)
-        Spree::TransactionNotificationMailer.stub(:delay).and_return(@job)
-        @job.stub(:send_mail).and_return(true)
+        allow(Spree::TransactionNotificationMailer).to receive(:send_mail).and_return(@job)
+        allow(@job).to receive(:deliver_later).and_return(true)
       end
 
-      it "should receive delay on TransactionNotificationMailer" do
-        Spree::TransactionNotificationMailer.should_receive(:delay).and_return(@job)
-        @transaction.save
+      context 'when delayed jobs are being used' do
+        it "should receive delay on TransactionNotificationMailer" do
+          expect(Spree::TransactionNotificationMailer).to receive(:send_mail).with(@transaction).and_return(@job)
+          @transaction.save
+        end
+
+        it "should_receive send_mail on delayed job" do
+          expect(@job).to receive(:deliver_later).and_return(true)
+          @transaction.save
+        end
       end
 
-      it "should_receive send_mail on delayed job" do
-        @job.should_receive(:send_mail).with(@transaction).and_return(true)
-        @transaction.save
+      context 'when delayed jobs are not being used' do
+        it "should receive delay on TransactionNotificationMailer" do
+          expect(Spree::TransactionNotificationMailer).to receive(:send_mail).with(@transaction).and_return(@job)
+          @transaction.save
+        end
       end
+
     end
 
     context 'when status changed to pending' do
@@ -253,7 +260,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should not receive send_transaction_mail" do
-        @transaction.should_not_receive(:send_transaction_mail)
+        expect(@transaction).not_to receive(:send_transaction_mail)
         @transaction.save
       end
     end
@@ -264,7 +271,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should not receive send_transaction_mail" do
-        @transaction.should_not_receive(:send_transaction_mail)
+        expect(@transaction).not_to receive(:send_transaction_mail)
         @transaction.save
       end
     end
@@ -278,7 +285,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should receive order_set_failure_for_payment" do
-        @transaction.should_receive(:order_set_failure_for_payment).and_return(true)
+        expect(@transaction).to receive(:order_set_failure_for_payment).and_return(true)
         @transaction.save
       end
     end
@@ -289,7 +296,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should not receive order_set_failure_for_payment" do
-        @transaction.should_not_receive(:order_set_failure_for_payment)
+        expect(@transaction).not_to receive(:order_set_failure_for_payment)
         @transaction.save
       end
     end
@@ -300,7 +307,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should not receive order_set_failure_for_payment" do
-        @transaction.should_not_receive(:order_set_failure_for_payment)
+        expect(@transaction).not_to receive(:order_set_failure_for_payment)
         @transaction.save
       end
     end
@@ -315,26 +322,26 @@ describe Spree::GtpayTransaction do
       end
 
       it "should set currency" do
-        @transaction.gtpay_tranx_currency.should eq(Spree::GtpayTransaction::CURRENCY_CODE[@order.currency])
+        expect(@transaction.gtpay_tranx_currency).to eq(Spree::GtpayTransaction::CURRENCY_CODE[@order.currency])
       end
 
       it "should set amount" do
-        @transaction.gtpay_tranx_amount.should eq(@order.reload.total)
+        expect(@transaction.gtpay_tranx_amount).to eq(@order.reload.total)
       end
 
       it "should set status" do
-        @transaction.status.should eq("Pending")
+        expect(@transaction.status).to eq("Pending")
       end
     end
 
     context 'on update' do
       before do
         @status = @transaction.status
-        @transaction.update_attributes(:gtpay_tranx_amount => 100)
+        @transaction.update(:gtpay_tranx_amount => 100)
       end
 
       it "transaction status should remain same" do
-        @transaction.status.should eq(@status)
+        expect(@transaction.status).to eq(@status)
       end
     end
   end
@@ -346,7 +353,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should return true" do
-        @transaction.successful_status_code?.should be_true
+        expect(@transaction.successful_status_code?).to be_truthy
       end
     end
 
@@ -356,14 +363,15 @@ describe Spree::GtpayTransaction do
       end
 
       it "should return false" do
-        @transaction.successful_status_code?.should be_false
+        expect(@transaction.successful_status_code?).to be_falsey
       end
     end
   end
 
   describe 'amount_in_cents' do
+    before { @transaction.update(:gtpay_tranx_amount => 100) }
     it "should return amount in cents" do
-      @transaction.amount_in_cents.should eq(3000)
+      expect(@transaction.amount_in_cents).to eq(10000)
     end
   end
 
@@ -374,7 +382,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should return true" do
-        @transaction.successful?.should be_true
+        expect(@transaction.successful?).to be_truthy
       end
     end
 
@@ -384,7 +392,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should return false" do
-        @transaction.successful?.should be_false
+        expect(@transaction.successful?).to be_falsey
       end
     end
   end
@@ -396,7 +404,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should return true" do
-        @transaction.pending?.should be_true
+        expect(@transaction.pending?).to be_truthy
       end
     end
 
@@ -406,7 +414,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should return false" do
-        @transaction.pending?.should be_false
+        expect(@transaction.pending?).to be_falsey
       end
     end
   end
@@ -418,7 +426,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should return true" do
-        @transaction.unsuccessful?.should be_true
+        expect(@transaction.unsuccessful?).to be_truthy
       end
     end
 
@@ -428,7 +436,7 @@ describe Spree::GtpayTransaction do
       end
 
       it "should return false" do
-        @transaction.unsuccessful?.should be_false
+        expect(@transaction.unsuccessful?).to be_falsey
       end
     end
   end
@@ -437,11 +445,11 @@ describe Spree::GtpayTransaction do
     context 'when successful_status_code?' do
       before do
         @transaction_params = {:gtpay_tranx_amount => 30.0, :gtpay_tranx_status_code => "00", :gtpay_tranx_status_msg => "Approved"}
-        @transaction.stub(:update_transaction_on_query).and_return(true)
+        allow(@transaction).to receive(:update_transaction_on_query).and_return(true)
       end
 
       it "should_receive update_transaction_on_query" do
-        @transaction.should_receive(:update_transaction_on_query).and_return(true)
+        expect(@transaction).to receive(:update_transaction_on_query).and_return(true)
         @transaction.update_transaction(@transaction_params)
       end
     end
@@ -449,16 +457,16 @@ describe Spree::GtpayTransaction do
 
     context 'when successful_status_code? is false' do
       before do
-        @transaction.stub(:order_set_failure_for_payment).and_return(true)
+        allow(@transaction).to receive(:order_set_failure_for_payment).and_return(true)
         @transaction_params = {:gtpay_tranx_amount => 30.0, :gtpay_tranx_status_code => "Z0", :gtpay_tranx_status_msg => "Declined"}
       end
 
       it "should save values" do
         @transaction.update_transaction(@transaction_params)
         @transaction.reload
-        @transaction.gtpay_tranx_amount.should eq(30.0)
-        @transaction.gtpay_tranx_status_code.should eq("Z0")
-        @transaction.gtpay_tranx_status_msg.should eq("Declined")
+        expect(@transaction.gtpay_tranx_amount).to eq(30.0)
+        expect(@transaction.gtpay_tranx_status_code).to eq("Z0")
+        expect(@transaction.gtpay_tranx_status_msg).to eq("Declined")
       end
     end
   end
@@ -466,23 +474,23 @@ describe Spree::GtpayTransaction do
 
   describe 'update_transaction_on_query' do
     before do
-      @transaction.stub(:order_complete_and_finalize).and_return(true)
-      @transaction.stub(:send_transaction_mail).and_return(true)
+      allow(@transaction).to receive(:order_complete_and_finalize).and_return(true)
+      allow(@transaction).to receive(:send_transaction_mail).and_return(true)
       @transaction_params = {"Amount" => 3000.0, "ResponseCode" => "00", "ResponseDescription" => "Approved"}
-      @transaction.stub(:query_interswitch).and_return(@transaction_params)
+      allow(@transaction).to receive(:query_interswitch).and_return(@transaction_params)
     end
 
     it "should_receive query_interswitch" do
-      @transaction.should_receive(:query_interswitch).and_return(@transaction_params)
+      expect(@transaction).to receive(:query_interswitch).and_return(@transaction_params)
       @transaction.update_transaction_on_query
     end
 
     it "should update with transaction params" do
       @transaction.update_transaction_on_query
       @transaction.reload
-      @transaction.gtpay_tranx_amount.should eq(30.0)
-      @transaction.gtpay_tranx_status_code.should eq("00")
-      @transaction.gtpay_tranx_status_msg.should eq("Approved")
+      expect(@transaction.gtpay_tranx_amount).to eq(30.0)
+      expect(@transaction.gtpay_tranx_status_code).to eq("00")
+      expect(@transaction.gtpay_tranx_status_msg).to eq("Approved")
     end
   end
 
@@ -491,37 +499,37 @@ describe Spree::GtpayTransaction do
     context 'to order' do
 
       it "should return total" do
-        @transaction.order_total.should eq(@order.reload.total)
+        expect(@transaction.order_total).to eq(@order.reload.total)
       end
 
       it "should return gtpay_payment" do
-        @transaction.order_gtpay_payment.should eq(@order.gtpay_payment)
+        expect(@transaction.order_gtpay_payment).to eq(@order.gtpay_payment)
       end
 
       context 'complete_and_finalize' do
         before do
-          @payment = mock_model(Spree::Payment)
-          @order.stub(:gtpay_payment).and_return(@payment)
-          @payment.stub(:process_and_complete!)
-          @transaction.stub(:order).and_return(@order)
+          @payment = double(Spree::Payment)
+          allow(@order).to receive(:gtpay_payment).and_return(@payment)
+          allow(@payment).to receive(:process_and_complete!)
+          allow(@transaction).to receive(:order).and_return(@order)
         end
 
         it "receive complete_and_finalize on order" do
-          @order.should_receive(:complete_and_finalize).and_return(true)
+          expect(@order).to receive(:complete_and_finalize).and_return(true)
           @transaction.order_complete_and_finalize
         end
       end
 
       context 'order_set_failure_for_payment' do
         before do
-          @payment = mock_model(Spree::Payment)
-          @order.stub(:gtpay_payment).and_return(@payment)
-          @payment.stub(:process_and_complete!)
-          @transaction.stub(:order).and_return(@order)
+          @payment = double(Spree::Payment)
+          allow(@order).to receive(:gtpay_payment).and_return(@payment)
+          allow(@payment).to receive(:process_and_complete!)
+          allow(@transaction).to receive(:order).and_return(@order)
         end
 
         it "receive complete_and_finalize on order" do
-          @order.should_receive(:set_failure_for_payment).and_return(true)
+          expect(@order).to receive(:set_failure_for_payment).and_return(true)
           @transaction.order_set_failure_for_payment
         end
       end
@@ -533,29 +541,29 @@ describe Spree::GtpayTransaction do
   describe 'webpay methods' do
     describe 'query_interswitch' do
       before do
-        @transaction.stub(:transaction_params).and_return("productId=4880")
-        @transaction.stub(:transaction_hash).and_return("abcde3wd")
+        allow(@transaction).to receive(:transaction_params).and_return("productId=4880")
+        allow(@transaction).to receive(:transaction_hash).and_return("abcde3wd")
         @response = { :parsed_response => ["abcd"] }
-        HTTParty.stub(:get).and_return(@response)
+        allow(HTTParty).to receive(:get).and_return(@response)
       end
 
       it "should receive get on Httparty" do
-        HTTParty.should_receive(:get).with("#{GT_DATA[:query_url]}productId=4880", {:headers => { "Hash" => "abcde3wd"} })
+        expect(HTTParty).to receive(:get).with("#{GT_DATA[:query_url]}productId=4880", {:headers => { "Hash" => "abcde3wd"} })
         @transaction.send(:query_interswitch)
       end
 
       it "should_receive parsed_response on response" do
-        @response.should_receive(:parsed_response).and_return(true)
+        expect(@response).to receive(:parsed_response).and_return(true)
         @transaction.send(:query_interswitch)
       end
 
       context 'when exception occurs' do
         before do
-          HTTParty.stub(:get).and_raise
+          allow(HTTParty).to receive(:get).and_raise
         end
 
         it "should return empty hash" do
-          @transaction.send(:query_interswitch).should eq({})
+          expect(@transaction.send(:query_interswitch)).to eq({})
         end
       end
     end
@@ -565,14 +573,14 @@ describe Spree::GtpayTransaction do
 
   describe 'transaction_params' do
     it "should return params" do
-      @transaction.send(:transaction_params).should eq("?productid=#{GT_DATA[:product_id]}&transactionreference=#{@transaction.gtpay_tranx_id}&amount=#{@transaction.amount_in_cents}")
+      expect(@transaction.send(:transaction_params)).to eq("?productid=#{GT_DATA[:product_id]}&transactionreference=#{@transaction.gtpay_tranx_id}&amount=#{@transaction.amount_in_cents}")
     end
   end
 
 
   describe 'transaction_hash' do
     it "should receive " do
-      Digest::SHA512.should_receive(:hexdigest).with(GT_DATA[:product_id] + @transaction.gtpay_tranx_id + GT_DATA[:mac_id]).and_return("transaction_hash")
+      expect(Digest::SHA512).to receive(:hexdigest).with(GT_DATA[:product_id] + @transaction.gtpay_tranx_id + GT_DATA[:mac_id]).and_return("transaction_hash")
       @transaction.send(:transaction_hash)
     end
   end

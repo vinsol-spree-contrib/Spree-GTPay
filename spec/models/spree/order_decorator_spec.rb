@@ -5,11 +5,11 @@ describe Spree::Order do
   let(:order) { Spree::Order.create! { |order| order.user = user }}
 
   before(:each) do
-    Spree::Stock::Quantifier.any_instance.stub(can_supply?: true)
+    allow_any_instance_of(Spree::Stock::Quantifier).to receive_messages(can_supply?: true)
     order.update_column(:total, 1000)
     order.update_column(:payment_total, 200)
     @shipping_category = Spree::ShippingCategory.create!(:name => 'test')
-    @stock_location = Spree::StockLocation.create! :name => 'test' 
+    @stock_location = Spree::StockLocation.create! :name => 'test'
     @product = Spree::Product.create!(:name => 'test_product', :price => 10, :shipping_category_id => @shipping_category.id)
     @stock_item = @product.master.stock_items.first
     @stock_item.adjust_count_on_hand(10)
@@ -29,7 +29,7 @@ describe Spree::Order do
   describe 'gtpay_payment' do
     context 'when gtpay_payment present' do
       before(:each) do
-        @gtpay_payment_method = Spree::Gateway::Gtpay.create(:name => "GTpay bank", :environment => Rails.env)
+        @gtpay_payment_method = Spree::Gateway::Gtpay.create(:name => "GTpay bank", :preferences => { test_mode: true })
       end
 
       context 'when payment state is checkout' do
@@ -38,7 +38,7 @@ describe Spree::Order do
         end
 
         it "should return gtpay_payment" do
-          order.gtpay_payment.should eq(@gtpay_payment)
+          expect(order.gtpay_payment).to eq(@gtpay_payment)
         end
 
       end
@@ -49,42 +49,43 @@ describe Spree::Order do
         end
 
         it "should return gtpay_payment" do
-          order.gtpay_payment.should eq(@gtpay_payment)
+          expect(order.gtpay_payment).to eq(@gtpay_payment)
         end
       end
     end
 
     context 'when gtpay_payment not present' do
       it "should return nil" do
-        order.gtpay_payment.should be_nil
+        expect(order.gtpay_payment).to be_nil
       end
     end
   end
 
   describe 'complete_and_finalize' do
     before do
-      @gtpay_payment_method = Spree::Gateway::Gtpay.create(:name => "gtpay epay", :environment => Rails.env)
+      @gtpay_payment_method = Spree::Gateway::Gtpay.create(:name => "gtpay epay", :preferences => { test_mode: true })
       @order = create_order_with_state("payment")
       @payment = @order.payments.create!(:amount => 100, :payment_method_id => @gtpay_payment_method.id) { |p| p.state = 'checkout' }
+      FactoryGirl.create(:store, default: true)
     end
 
     it "should receive complete!" do
       @order.complete_and_finalize
-      @order.state.should eq("complete")
+      expect(@order.state).to eq("complete")
     end
 
     it "set completed_at for order" do
       @order.complete_and_finalize
-      @order.completed_at.should be_within(2.seconds).of(Time.current)
+      expect(@order.completed_at).to be_within(2.seconds).of(Time.current)
     end
 
     it "should set payment to complete" do
       @order.complete_and_finalize
-      @payment.reload.state.should eq("completed")
+      expect(@payment.reload.state).to eq("completed")
     end
 
     it "should receive finalize!" do
-      @order.should_receive(:finalize!)
+      expect(@order).to receive(:finalize!)
       @order.complete_and_finalize
     end
 
@@ -92,14 +93,14 @@ describe Spree::Order do
 
   describe 'set_failure_for_payment' do
     before do
-      @gtpay_payment_method = Spree::Gateway::Gtpay.create(:name => "gtpay epay", :environment => Rails.env)
+      @gtpay_payment_method = Spree::Gateway::Gtpay.create(:name => "gtpay epay", :preferences => { test_mode: true })
       @order = create_order_with_state("payment")
       @payment = @order.payments.create!(:amount => 100, :payment_method_id => @gtpay_payment_method.id) { |p| p.state = 'processing' }
     end
 
     it "payment state should be failed" do
       @order.set_failure_for_payment
-      @payment.reload.state.should eq("failed")
+      expect(@payment.reload.state).to eq("failed")
     end
   end
 
